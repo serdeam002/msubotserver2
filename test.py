@@ -1,14 +1,3 @@
-from flask import Flask
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Api connect"
-
-if __name__ == '__main__':
-    app.run()
-
 import MySQLdb
 from flask_mysqldb import MySQL
 from flask_cors import CORS
@@ -20,6 +9,12 @@ app = Flask(__name__)
 load_dotenv()
 mysql = MySQL(app)
 CORS(app)
+
+
+
+@app.route('/')
+def home():
+    return "Api connect"
 
 # Create a MySQL connection
 db = MySQLdb.connect(

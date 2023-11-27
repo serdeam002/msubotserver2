@@ -8,13 +8,17 @@ app = Flask(__name__)
 load_dotenv()
 CORS(app)
 
+host = os.environ.get('JAWSDB_HOST')
+user = os.environ.get('JAWSDB_USER')
+password = os.environ.get('JAWSDB_PASSWORD')
+database = os.environ.get('JAWSDB_DATABASE')
 
 # Create a MySQL connection
 db = mysql.connector.connect(
-    host=os.getenv("DB_HOST"),
-    user=os.getenv("DB_USERNAME"),
-    passwd=os.getenv("DB_PASSWORD"),
-    db=os.getenv("DB_NAME"),
+    host=host,
+    user=user,
+    password=password,
+    database=database
 )
 
 cursor = db.cursor()

@@ -86,12 +86,12 @@ def check_computer_usage_server():
         query = "SELECT * FROM computer_usage WHERE mac_address = %s"
         cursor.execute(query, (client_mac_address,))
         result = cursor.fetchone()
-
+        print(result)
         if result:
             # Display message for a computer already using the serial
             return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว"})
         else:
-            return print("This computer is not running serial yet.")
+            return jsonify("This computer is not running serial yet.")
 
     except Exception as e:
         # Log the error for debugging

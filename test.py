@@ -85,9 +85,9 @@ def check_computer_usage_server():
 
         if result[2] == client_mac_address:
             # Display message for a computer already using the serial
-            return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว"})
-        else:
             return jsonify({"error": "This computer is not running serial yet."})
+        else:
+            return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว"})
     except Exception as e:
         # Log the error for debugging
         print(f"Error in '/api/computer_usage' route: {str(e)}")

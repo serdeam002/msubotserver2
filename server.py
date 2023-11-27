@@ -36,7 +36,6 @@ def verify_serial():
         query = "SELECT * FROM computer_usage WHERE serial = %s"
         cursor.execute(query, (user_serial,))
         result = cursor.fetchone()
-        print(result[2])
         if result:
             # Check if the serial in computer_usage matches the one entered by the user
             if result[2] == user_serial:

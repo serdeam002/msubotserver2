@@ -83,11 +83,11 @@ def check_computer_usage_server():
         cursor.execute(query, (client_mac_address,))
         result = cursor.fetchone()
 
-        if result[2] == client_mac_address:
+        if result:
             # Display message for a computer already using the serial
-            return jsonify({"error": "This computer is not running serial yet."})
-        else:
             return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว"})
+        else:
+            return jsonify({"error": "This computer is not running serial yet."})
     except Exception as e:
         # Log the error for debugging
         print(f"Error in '/api/computer_usage' route: {str(e)}")

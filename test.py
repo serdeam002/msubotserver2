@@ -1,5 +1,4 @@
-import MySQLdb
-from flask_mysqldb import MySQL
+import mysql.connector
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -7,20 +6,15 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 load_dotenv()
-mysql = MySQL(app)
 CORS(app)
 
 
-
 # Create a MySQL connection
-db = MySQLdb.connect(
+db = mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     user=os.getenv("DB_USERNAME"),
     passwd=os.getenv("DB_PASSWORD"),
     db=os.getenv("DB_NAME"),
-    autocommit=True,
-    ssl_mode="VERIFY_IDENTITY",
-    ssl="cacert.pem"
 )
 
 cursor = db.cursor()

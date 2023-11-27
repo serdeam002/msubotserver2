@@ -88,7 +88,7 @@ def check_computer_usage_server():
         print(result)
         if result:
             # Display message for a computer already using the serial
-            return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว"})
+            return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว.."})
         else:
             return jsonify("This computer is not running serial yet.")
 

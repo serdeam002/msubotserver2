@@ -12,10 +12,6 @@ CORS(app)
 
 
 
-@app.route('/')
-def home():
-    return "Api connect"
-
 # Create a MySQL connection
 db = MySQLdb.connect(
     host=os.getenv("DB_HOST"),
@@ -28,6 +24,10 @@ db = MySQLdb.connect(
 )
 
 cursor = db.cursor()
+
+@app.route('/')
+def home():
+    return "Api connect"
 
 @app.route('/api/verify_serial', methods=['GET'])
 def verify_serial():

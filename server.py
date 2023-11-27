@@ -49,7 +49,7 @@ def verify_serial():
             # Serial not found, proceed to insert the serial
             return insert_serial(user_serial)
     except Exception as e:
-        return print(str(e))
+        return jsonify({"error": str(e)})
 
 @app.route('/api/insert_serial', methods=['POST'])
 def insert_serial(user_serial):
@@ -73,7 +73,7 @@ def insert_serial(user_serial):
             # Display error message for incorrect serial
             return jsonify({"error": "The serial is invalid!.\n\nซีเรียลไม่ถูกต้อง"})
     except Exception as e:
-        return print(str(e))
+        return jsonify({"error": str(e)})
 
 @app.route('/api/computer_usage', methods=['GET'])
 def check_computer_usage_server():

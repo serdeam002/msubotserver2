@@ -87,7 +87,7 @@ def check_computer_usage_server():
         cursor.execute(query, (client_mac_address,))
         result = cursor.fetchone()
 
-        if result == "":
+        if result == 0:
             return print("This computer is not running serial yet.")
         if result:
             # Display message for a computer already using the serial

@@ -40,7 +40,7 @@ def verify_serial():
             # Check if the serial in computer_usage matches the one entered by the user
             if result[2] == user_serial:
                 # Serials match, open the program
-                return jsonify({"error": "Serial is already in use.\n\nซีเรียลถูกใช้งานแล้ว"})
+                return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
 
             else:
                 # Serials don't match, proceed to insert the serial
@@ -68,10 +68,10 @@ def insert_serial(user_serial):
             db.commit()
 
             # Display success message
-            return jsonify({"message": "Serial successfully used. Program is opening.\n\nซีเรียลสำเร็จแล้วโปรแกรมกำลังเปิด"})
+            return jsonify({"message": "Serial successfully used. Program is opening.\nซีเรียลสำเร็จแล้วโปรแกรมกำลังเปิด"})
         else:
             # Display error message for incorrect serial
-            return jsonify({"error": "The serial is invalid!.\n\nซีเรียลไม่ถูกต้อง"})
+            return jsonify({"error": "The serial is invalid!.\nซีเรียลไม่ถูกต้อง"})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -88,7 +88,7 @@ def check_computer_usage_server():
         print(result)
         if result:
             # Display message for a computer already using the serial
-            return jsonify({"message": "This computer already uses serial\n\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว.."})
+            return jsonify({"message": "This computer already uses serial\nคอมพิวเตอร์เครื่องนี้ใช้ซีเรียลแล้ว.."})
         else:
             return jsonify({"error": "This computer is not running serial yet."})
 

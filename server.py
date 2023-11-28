@@ -2,7 +2,7 @@ import mysql.connector
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 import time
 
 app = Flask(__name__)
@@ -14,24 +14,40 @@ user = os.environ.get('JAWSDB_USER')
 password = os.environ.get('JAWSDB_PASSWORD')
 database = os.environ.get('JAWSDB_DATABASE')
 
-# Create a MySQL connection
-db = mysql.connector.connect(
-    host=host,
-    user=user,
-    password=password,
-    database=database
-)
+# Function to create a MySQL connection
+def create_db_connection():
+    return mysql.connector.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=database
+    )
 
-cursor = db.cursor()
+# Function to get a cursor and connection
+def get_cursor_and_connection():
+    if 'db_connection' not in g:
+        g.db_connection = create_db_connection()
+    if 'db_cursor' not in g:
+        g.db_cursor = g.db_connection.cursor()
+    return g.db_cursor, g.db_connection
+
+# Close the cursor and connection when the application context is popped
+@app.teardown_appcontext
+def close_db_context(error):
+    if 'db_cursor' in g:
+        g.db_cursor.close()
+    if 'db_connection' in g:
+        g.db_connection.close()
 
 @app.route('/')
 def home():
-    return "Api connect"
+    return "API connected"
 
 @app.route('/api/verify_serial', methods=['GET'])
 def verify_serial():
     try:
         user_serial = request.args.get('serial')
+        cursor, db_connection = get_cursor_and_connection()
 
         # Check if the serial exists in the database
         query = "SELECT * FROM computer_usage WHERE serial = %s"
@@ -44,7 +60,6 @@ def verify_serial():
             if result[2] == user_serial:
                 # Serials match, open the program
                 return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
-
             else:
                 # Serials don't match, proceed to insert the serial
                 return insert_serial(user_serial)
@@ -57,7 +72,9 @@ def verify_serial():
 @app.route('/api/insert_serial', methods=['POST'])
 def insert_serial(user_serial):
     try:
+        cursor, db_connection = get_cursor_and_connection()
         client_mac_address = request.headers.get('mac_address')
+
         # Check if the serial exists in the database
         query = "SELECT * FROM serials WHERE serial = %s"
         cursor.execute(query, (user_serial,))
@@ -66,10 +83,9 @@ def insert_serial(user_serial):
 
         if result:
             # Serial exists, store data in computer_usage table
-
             insert_query = "INSERT INTO computer_usage (mac_address, serial, is_serial_used) VALUES (%s, %s, %s)"
             cursor.execute(insert_query, (client_mac_address, user_serial, True))
-            db.commit()
+            db_connection.commit()
 
             # Display success message
             return jsonify({"message": "Serial successfully used. Program is opening.\nซีเรียลสำเร็จแล้วโปรแกรมกำลังเปิด"})
@@ -82,6 +98,8 @@ def insert_serial(user_serial):
 @app.route('/api/computer_usage', methods=['GET'])
 def check_computer_usage_server():
     try:
+        cursor, db_connection = get_cursor_and_connection()
+
         # Get the client's MAC address from the request headers
         client_mac_address = request.headers.get('mac_address')
 
@@ -103,7 +121,6 @@ def check_computer_usage_server():
         # Log the error for debugging
         print(f"Error in '/api/computer_usage' route: {str(e)}")
         return jsonify({"error": "Internal server error."})
-
 
 if __name__ == '__main__':
     app.run(debug=True)

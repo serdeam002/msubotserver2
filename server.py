@@ -87,7 +87,7 @@ def check_computer_usage_server():
         # Check if the current computer has used the serial before
         query = "SELECT * FROM computer_usage WHERE mac_address = %s"
         cursor.execute(query, (client_mac_address,))
-        result = cursor.fetchone()
+        result = cursor.fetchall()
         print(result)
         if result:
             # Display message for a computer already using the serial

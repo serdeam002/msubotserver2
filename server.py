@@ -36,7 +36,7 @@ def verify_serial():
         # Check if the serial exists in the database
         query = "SELECT * FROM computer_usage WHERE serial = %s"
         cursor.execute(query, (user_serial,))
-        result = cursor.fetchone()
+        result = cursor.fetchall()
         if result:
             # Check if the serial in computer_usage matches the one entered by the user
             if result[2] == user_serial:
@@ -59,7 +59,7 @@ def insert_serial(user_serial):
         # Check if the serial exists in the database
         query = "SELECT * FROM serials WHERE serial = %s"
         cursor.execute(query, (user_serial,))
-        result = cursor.fetchone()
+        result = cursor.fetchall()
 
         if result:
             # Serial exists, store data in computer_usage table

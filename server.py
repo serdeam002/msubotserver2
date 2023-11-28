@@ -37,7 +37,7 @@ def verify_serial():
         query = "SELECT * FROM computer_usage WHERE serial = %s"
         cursor.execute(query, (user_serial,))
         result = cursor.fetchall()
-        print("ตรวจค่าซีเรียลว่าใช้หรือยัง" + result)
+        print(result)
 
         if result:
             # Check if the serial in computer_usage matches the one entered by the user
@@ -62,7 +62,7 @@ def insert_serial(user_serial):
         query = "SELECT * FROM serials WHERE serial = %s"
         cursor.execute(query, (user_serial,))
         result = cursor.fetchall()
-        print("ตรวจค่าซีเรียลว่าถูกสร้างไหม" + result)
+        print(result)
 
         if result:
             # Serial exists, store data in computer_usage table
@@ -91,7 +91,7 @@ def check_computer_usage_server():
         query = "SELECT * FROM computer_usage WHERE mac_address = %s"
         cursor.execute(query, (client_mac_address,))
         result = cursor.fetchall()
-        print("ตรวจเครื่องที่ใช้งานซีเรียลแล้ว"+result)
+        print(result)
 
         if result:
             # Display message for a computer already using the serial

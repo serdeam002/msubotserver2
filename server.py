@@ -82,7 +82,7 @@ def check_computer_usage_server():
         # Get the client's MAC address from the request headers
         client_mac_address = request.headers.get('Client-MAC-Address')
 
-        time.sleep(2)
+        time.sleep(2) #delay
 
         # Check if the current computer has used the serial before
         query = "SELECT * FROM computer_usage WHERE mac_address = %s"

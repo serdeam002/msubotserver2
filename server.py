@@ -55,7 +55,7 @@ def verify_serial():
 @app.route('/api/insert_serial', methods=['POST'])
 def insert_serial(user_serial):
     try:
-        client_mac_address = request.headers.get('Client-MAC-Address')
+        client_mac_address = request.headers.get('mac_address')
         # Check if the serial exists in the database
         query = "SELECT * FROM serials WHERE serial = %s"
         cursor.execute(query, (user_serial,))
@@ -80,7 +80,7 @@ def insert_serial(user_serial):
 def check_computer_usage_server():
     try:
         # Get the client's MAC address from the request headers
-        client_mac_address = request.headers.get('Client-MAC-Address')
+        client_mac_address = request.headers.get('mac_address')
 
         time.sleep(3) #delay
 

@@ -3,7 +3,6 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from flask import Flask, request, jsonify, g
-import time
 
 app = Flask(__name__)
 load_dotenv()
@@ -102,8 +101,6 @@ def check_computer_usage_server():
 
         # Get the client's MAC address from the request headers
         client_mac_address = request.headers.get('mac_address')
-
-        time.sleep(3) #delay
 
         # Check if the current computer has used the serial before
         query = "SELECT * FROM computer_usage WHERE mac_address = %s"

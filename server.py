@@ -112,7 +112,7 @@ def check_version_server():
             # Display message for a computer already using the serial
             return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
         else:
-            return jsonify({"message": "8888888"})
+            return jsonify({"message": "Version ok"})
     except Exception as e:
         # Log the error for debugging
         print(f"Error in '/api/version' route: {str(e)}")

@@ -108,7 +108,7 @@ def check_version_server():
         result = cursor.fetchone()
         print(result)
 
-        if result != version:
+        if result[1] != version:
             # Display message for a computer already using the serial
             return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
         else:

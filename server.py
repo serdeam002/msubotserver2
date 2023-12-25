@@ -109,15 +109,15 @@ def check_version_server():
         print(result)
         if result:
             # Check if the serial in computer_usage matches the one entered by the user
-            if result[1] != version:
+            if result[1] == version:
                 # Serials match, open the program
-                return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
+                return jsonify({"message": "Version ok"})
             else:
                 # Serials don't match, proceed to insert the serial
-                return jsonify({"message": "Version ok"})
+                return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
         else:
             # Serial not found, proceed to insert the serial
-            return jsonify({"message": "Version ok"})
+            return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
 
     except Exception as e:
         # Log the error for debugging

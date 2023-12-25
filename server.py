@@ -114,10 +114,10 @@ def check_version_server():
                 return jsonify({"message": "Version ok"})
             else:
                 # Serials don't match, proceed to insert the serial
-                return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
+                return jsonify({"error": "You are not using the current version. Press the OK button to download the new version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่กดปุ่ม OK"})
         else:
             # Serial not found, proceed to insert the serial
-            return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
+            return jsonify({"error": "You are not using the current version. Press the OK button to download the new version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่กดปุ่ม OK"})
 
     except Exception as e:
         # Log the error for debugging

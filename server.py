@@ -94,6 +94,29 @@ def insert_serial(user_serial):
     except Exception as e:
         return jsonify({"error": str(e)})
 
+@app.route('/api/version', methods=['GET'])
+def check_version_server():
+    try:
+        cursor, db_connection = get_cursor_and_connection()
+
+        # Get the client's MAC address from the request headers
+        version = request.headers.get('version')
+
+        # Check if the current computer has used the serial before
+        query = "SELECT * FROM version WHERE version = %s"
+        cursor.execute(query, (version,))
+        result = cursor.fetchone()
+        print(result)
+
+        if not result:
+            # Display message for a computer already using the serial
+            return jsonify({"error": "You are not using the current version.\nคุณไม่ได้ใช้เวอร์ชั่นปัจจุบัน ดาวโหลดเวอร์ชั่นใหม่ได้ที่:"})
+
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in '/api/version' route: {str(e)}")
+        return jsonify({"error": "Internal server error."})
+
 @app.route('/api/computer_usage', methods=['GET'])
 def check_computer_usage_server():
     try:

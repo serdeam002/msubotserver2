@@ -175,14 +175,10 @@ def add_data():
 @app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
 def edit_data(item_id):
     try:
-        # Handle CORS preflight request
-        if request.method == 'OPTIONS':
-            return {'status': 'ok'}, 200
-
         # Get data from request
         data = request.get_json()
-        updated_serial = data.get('serial')
-        updated_status = data.get('status')
+        updated_serial = data.get['serial']
+        updated_status = data.get['status']
 
         # Check if both serial and status are provided
         if updated_serial is None or updated_status is None:

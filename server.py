@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify, g
 app = Flask(__name__)
 load_dotenv()
 CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 host = os.environ.get('JAWSDB_HOST')
 user = os.environ.get('JAWSDB_USER')
@@ -186,7 +187,6 @@ def edit_data(item_id):
 
         # Update data in the database
         cursor, connection = get_cursor_and_connection()
-        print(f'Item ID: {item_id}, Updated Serial: {updated_serial}, Updated Status: {updated_status}')
         cursor.execute('UPDATE serials SET serial=?, status=? WHERE id=?',
                           (updated_serial, updated_status, item_id))
         connection.commit()

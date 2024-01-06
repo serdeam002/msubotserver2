@@ -177,8 +177,8 @@ def edit_data(item_id):
     try:
         # Get data from request
         data = request.get_json()
-        updated_serial = data.get['serial']
-        updated_status = data.get['status']
+        updated_serial = data.get('serial')
+        updated_status = data.get('status')
 
         # Check if both serial and status are provided
         if updated_serial is None or updated_status is None:

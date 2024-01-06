@@ -172,19 +172,27 @@ def add_data():
     return jsonify({"message": "Data added successfully"})
 
 # แก้ไขข้อมูล
-@app.route('/api/editdata/<int:id>', methods=['PUT'])
-def edit_data(id):
-    cursor, connection = get_cursor_and_connection()
+@app.route('/api/editdata/<int:item_id>', methods=['PUT'])
+def edit_data(item_id):
+    try:
+        # Get data from request
+        data = request.get_json()
+        updated_serial = data.get('serial')
+        updated_status = data.get('status')
 
-    # รับข้อมูลที่จะแก้ไขจากข้อมูลที่ส่งมา
-    data = request.get_json()
-    new_serial = data['new_serial']
+        # Check if both serial and status are provided
+        if updated_serial is None or updated_status is None:
+            return jsonify({'error': 'Both serial and status are required'}), 400
 
-    # ส่งคำขอ SQL เพื่อแก้ไขข้อมูลในฐานข้อมูล
-    cursor.execute("UPDATE serials SET serial = %s WHERE id = %s", (new_serial, id))
-    connection.commit()
+        # Update data in the database
+        db_cursor, db_connection = get_cursor_and_connection()
+        db_cursor.execute('UPDATE your_table_name SET serial=?, status=? WHERE id=?',
+                          (updated_serial, updated_status, item_id))
+        db_connection.commit()
 
-    return jsonify({"message": "Data updated successfully"})
+        return jsonify({'message': 'Data updated successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])

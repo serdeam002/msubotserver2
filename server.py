@@ -191,8 +191,11 @@ def edit_data(item_id):
         db_connection.commit()
 
         return jsonify({'message': 'Data updated successfully'})
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Print the exception to the console for debugging
+        print(f"Error: {str(e)}")
+        return jsonify({'error': f'Error: {str(e)}'}), 500
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])

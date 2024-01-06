@@ -159,42 +159,56 @@ def check_computer_usage_server():
 # เพิ่มข้อมูล
 @app.route('/api/adddata', methods=['POST'])
 def add_data():
-    cur = mysql.connection.cursor()
-    serial = request.json['serial']
-    status = request.json['status']
-    cur.execute("INSERT INTO serials (serial, status) VALUES (%s, %s)", (serial, status))
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({'message': 'Data added successfully'})
+    cursor, connection = get_cursor_and_connection()
+
+    # รับข้อมูลที่จะเพิ่มจากข้อมูลที่ส่งมา
+    data = request.get_json()
+    serial = data['serial']
+
+    # ส่งคำขอ SQL เพื่อเพิ่มข้อมูลในฐานข้อมูล
+    cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
+    connection.commit()
+
+    return jsonify({"message": "Data added successfully"})
 
 # แก้ไขข้อมูล
 @app.route('/api/editdata/<int:id>', methods=['PUT'])
 def edit_data(id):
-    cur = mysql.connection.cursor()
-    serial = request.json['serial']
-    status = request.json['status']
-    cur.execute("UPDATE serials SET serial=%s, status=%s WHERE id=%s", (serial, status, id))
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({'message': 'Data updated successfully'})
+    cursor, connection = get_cursor_and_connection()
+
+    # รับข้อมูลที่จะแก้ไขจากข้อมูลที่ส่งมา
+    data = request.get_json()
+    new_serial = data['new_serial']
+
+    # ส่งคำขอ SQL เพื่อแก้ไขข้อมูลในฐานข้อมูล
+    cursor.execute("UPDATE serials SET serial = %s WHERE id = %s", (new_serial, id))
+    connection.commit()
+
+    return jsonify({"message": "Data updated successfully"})
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
 def delete_data(id):
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM serials WHERE id=%s", (id,))
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({'message': 'Data deleted successfully'})
+    cursor, connection = get_cursor_and_connection()
+
+    # ส่งคำขอ SQL เพื่อลบข้อมูลจากฐานข้อมูล
+    cursor.execute("DELETE FROM serials WHERE id = %s", (id,))
+    connection.commit()
+
+    return jsonify({"message": "Data deleted successfully"})
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
 def get_data():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM serials")
-    data = cur.fetchall()
-    cur.close()
-    return jsonify(data)
+    cursor, connection = get_cursor_and_connection()
+
+    # ส่งคำขอ SQL เพื่อดึงข้อมูลจากฐานข้อมูล
+    cursor.execute("SELECT * FROM serials")
+    result = cursor.fetchall()
+
+    # แปลงผลลัพธ์เป็นรูปแบบ JSON และส่งกลับไปยังผู้ใช้
+    response = jsonify(result)
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)

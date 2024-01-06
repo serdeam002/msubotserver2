@@ -175,6 +175,10 @@ def add_data():
 @app.route('/api/editdata/<int:item_id>', methods=['PUT'])
 def edit_data(item_id):
     try:
+        # Handle CORS preflight request
+        if request.method == 'OPTIONS':
+            return {'status': 'ok'}, 200
+
         # Get data from request
         data = request.get_json()
         updated_serial = data.get('serial')

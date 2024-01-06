@@ -162,7 +162,7 @@ def add_data():
     cur = mysql.connection.cursor()
     serial = request.json['serial']
     status = request.json['status']
-    cur.execute("INSERT INTO your_table (serial, status) VALUES (%s, %s)", (serial, status))
+    cur.execute("INSERT INTO serials (serial, status) VALUES (%s, %s)", (serial, status))
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'Data added successfully'})
@@ -173,7 +173,7 @@ def edit_data(id):
     cur = mysql.connection.cursor()
     serial = request.json['serial']
     status = request.json['status']
-    cur.execute("UPDATE your_table SET serial=%s, status=%s WHERE id=%s", (serial, status, id))
+    cur.execute("UPDATE serials SET serial=%s, status=%s WHERE id=%s", (serial, status, id))
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'Data updated successfully'})
@@ -182,7 +182,7 @@ def edit_data(id):
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
 def delete_data(id):
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM your_table WHERE id=%s", (id,))
+    cur.execute("DELETE FROM serials WHERE id=%s", (id,))
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'Data deleted successfully'})
@@ -191,7 +191,7 @@ def delete_data(id):
 @app.route('/api/getdata', methods=['GET'])
 def get_data():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM your_table")
+    cur.execute("SELECT * FROM serials")
     data = cur.fetchall()
     cur.close()
     return jsonify(data)

@@ -172,7 +172,7 @@ def add_data():
     return jsonify({"message": "Data added successfully"})
 
 # แก้ไขข้อมูล
-@app.route('/api/editdata/<int:item_id>', methods=['PUT'])
+@app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
 def edit_data(item_id):
     try:
         # Handle CORS preflight request

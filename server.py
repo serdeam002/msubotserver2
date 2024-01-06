@@ -86,6 +86,11 @@ def insert_serial(user_serial):
             cursor.execute(insert_query, (client_mac_address, user_serial, True))
             db_connection.commit()
 
+            # Update the status column in the serials table
+            update_query = "UPDATE serials SET status = 1 WHERE serial = %s"
+            cursor.execute(update_query, (user_serial,))
+            db_connection.commit()
+
             # Display success message
             return jsonify({"message": "Serial successfully used. Program is opening.\nซีเรียลสำเร็จแล้วโปรแกรมกำลังเปิด"})
         else:

@@ -186,7 +186,7 @@ def edit_data(item_id):
 
         # Update data in the database
         cursor, connection = get_cursor_and_connection()
-        cursor.execute('UPDATE serials SET serial=example_serial, status=1 WHERE id=3')
+        cursor.execute('UPDATE serials SET serial="example_serial", status="1" WHERE id=3')
         connection.commit()
 
         return jsonify({'message': 'Data updated successfully'})

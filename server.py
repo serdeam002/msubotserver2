@@ -189,7 +189,6 @@ def edit_data(item_id):
         db_cursor.execute('UPDATE serials SET serial=?, status=? WHERE id=?',
                           (updated_serial, updated_status, item_id))
         db_connection.commit()
-        print('UPDATE serials SET serial=?, status=? WHERE id=?', (updated_serial, updated_status, item_id))
 
         return jsonify({'message': 'Data updated successfully'})
     except Exception as e:

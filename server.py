@@ -155,20 +155,46 @@ def check_computer_usage_server():
         return jsonify({"error": "Internal server error."})
 
 #showdatainwebsite
+
+# เพิ่มข้อมูล
+@app.route('/api/adddata', methods=['POST'])
+def add_data():
+    cur = mysql.connection.cursor()
+    serial = request.json['serial']
+    status = request.json['status']
+    cur.execute("INSERT INTO your_table (serial, status) VALUES (%s, %s)", (serial, status))
+    mysql.connection.commit()
+    cur.close()
+    return jsonify({'message': 'Data added successfully'})
+
+# แก้ไขข้อมูล
+@app.route('/api/editdata/<int:id>', methods=['PUT'])
+def edit_data(id):
+    cur = mysql.connection.cursor()
+    serial = request.json['serial']
+    status = request.json['status']
+    cur.execute("UPDATE your_table SET serial=%s, status=%s WHERE id=%s", (serial, status, id))
+    mysql.connection.commit()
+    cur.close()
+    return jsonify({'message': 'Data updated successfully'})
+
+# ลบข้อมูล
+@app.route('/api/deletedata/<int:id>', methods=['DELETE'])
+def delete_data(id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM your_table WHERE id=%s", (id,))
+    mysql.connection.commit()
+    cur.close()
+    return jsonify({'message': 'Data deleted successfully'})
+
+# ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
 def get_data():
-    try:
-        cursor, db_connection = get_cursor_and_connection()
-
-        # ทำการ query ข้อมูลจากฐานข้อมูล
-        cursor.execute("SELECT * FROM serials")
-        result = cursor.fetchall()
-
-        # ส่งผลลัพธ์กลับในรูปแบบ JSON
-        return jsonify(result)
-    except Exception as e:
-        # จัดการข้อผิดพลาดในกรณีที่มีข้อผิดพลาดในการ query
-        return jsonify({"error": str(e)})
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM your_table")
+    data = cur.fetchall()
+    cur.close()
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)

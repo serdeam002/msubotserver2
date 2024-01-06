@@ -154,5 +154,21 @@ def check_computer_usage_server():
         print(f"Error in '/api/computer_usage' route: {str(e)}")
         return jsonify({"error": "Internal server error."})
 
+#showdatainwebsite
+@app.route('/api/getdata', methods=['GET'])
+def get_data():
+    try:
+        cursor, db_connection = get_cursor_and_connection()
+
+        # ทำการ query ข้อมูลจากฐานข้อมูล
+        cursor.execute("SELECT * FROM serials")
+        result = cursor.fetchall()
+
+        # ส่งผลลัพธ์กลับในรูปแบบ JSON
+        return jsonify(result)
+    except Exception as e:
+        # จัดการข้อผิดพลาดในกรณีที่มีข้อผิดพลาดในการ query
+        return jsonify({"error": str(e)})
+
 if __name__ == '__main__':
     app.run(debug=True)

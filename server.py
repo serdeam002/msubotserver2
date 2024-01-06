@@ -183,12 +183,11 @@ def edit_data(item_id):
         # Check if both serial and status are provided
         if updated_serial is None or updated_status is None:
             return jsonify({'error': 'Both serial and status are required'}), 400
-        print(updated_serial, updated_status, item_id, "99999999999999999999999999999999999999999999999999999999999999999999")
 
         # Update data in the database
         cursor, connection = get_cursor_and_connection()
-        cursor.execute('UPDATE serials SET serial=?, status=? WHERE id=?',
-                          ( updated_serial, False, item_id ))
+        cursor.execute('UPDATE serials SET serial=?, status=? WHERE serial=?',
+                          (updated_serial, updated_status, updated_serial))
         connection.commit()
 
         return jsonify({'message': 'Data updated successfully'})

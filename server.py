@@ -82,7 +82,7 @@ def insert_serial(user_serial):
 
         if result:
             # Serial exists, store data in computer_usage table
-            insert_query = "INSERT INTO computer_usage (mac_address, serial, is_serial_used) VALUES (%s, %s, %s)"
+            insert_query = "INSERT INTO computer_usage (mac_address, serial) VALUES (%s, %s)"
             cursor.execute(insert_query, (client_mac_address, user_serial, True))
             db_connection.commit()
 

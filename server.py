@@ -6,8 +6,7 @@ from flask import Flask, request, jsonify, g
 
 app = Flask(__name__)
 load_dotenv()
-#CORS(app)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app)
 
 host = os.environ.get('JAWSDB_HOST')
 user = os.environ.get('JAWSDB_USER')

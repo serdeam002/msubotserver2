@@ -168,23 +168,17 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
 
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 403
-
         try:
-            with get_cursor_and_connection() as (cursor, connection):
-                data = jwt.decode(token, secret_key)
-                user = get_user_from_database(data['user_id'], cursor, connection)
-
-                if not user:
-                    raise Exception('User not found')
-                request.user = user
-
+            data = jwt.decode(token, secret_key)
+            print(f"Decoded Token Data: {data}")
         except jwt.ExpiredSignatureError:
+            print("Token has expired")
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
+            print("Invalid token")
             return jsonify({'error': 'Invalid token'}), 401
         except Exception as e:
+            print(f"Error during token verification: {str(e)}")
             return jsonify({'error': str(e)}), 401
 
         return f(*args, **kwargs)

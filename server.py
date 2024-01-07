@@ -218,6 +218,7 @@ def delete_data(id):
 @app.route('/api/getdata', methods=['GET'])
 @jwt_required()
 def get_data():
+    print(request.headers)
     cursor, connection = get_cursor_and_connection()
 
     cursor.execute("SELECT * FROM serials")

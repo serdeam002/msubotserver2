@@ -160,6 +160,10 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
+app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+jwt = JWTManager(app)
+
 # เพิ่มข้อมูล
 @app.route('/api/adddata', methods=['POST'])
 @jwt_required()

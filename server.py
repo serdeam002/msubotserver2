@@ -3,9 +3,9 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from flask import Flask, request, jsonify, g
-import jwt
 import secrets
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from datetime import timedelta
 
 app = Flask(__name__)
 load_dotenv()
@@ -159,7 +159,8 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
-app.config['JWT_SECRET_KEY'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcwNDY1NjE4MSwianRpIjoiZDFhYjI2OGMtMjk3Ni00YzQyLTk2YzMtODNlZmNlZWY0YTIwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IndlYXB0bncifSwibmJmIjoxNzA0NjU2MTgxLCJjc3JmIjoiODM0MGRhZjctZjBjOC00YjYzLTliYWQtYmRhNWE5NjAxYTkwIiwiZXhwIjoxNzA0NjU3MDgxfQ.alBlAnC29SblpVOgLK4rfWx0rBXVruhBRHv-MzURWHA'
+app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 # เพิ่มข้อมูล

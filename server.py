@@ -171,6 +171,7 @@ def token_required(f):
         try:
             data = jwt.decode(token, secret_key)
             user = get_user_from_database(data['user_id'], cursor, connection)
+            connection.commit()
 
             if not user:
                 raise Exception('User not found')

@@ -169,7 +169,7 @@ def token_required(f):
         token = request.headers.get('Authorization')
         data = jwt.decode(token, secret_key)
         try:
-
+            #T
             print(f"Decoded Token Data: {data}")
         except jwt.ExpiredSignatureError:
             print("Token has expired")

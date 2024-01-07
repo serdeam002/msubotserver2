@@ -199,6 +199,7 @@ def token_required(f):
             print(f"Error during token verification: {str(e)}")
             return jsonify({'error': str(e)}), 401
 
+        # Corrected return statement to call the original function 'f'
         return f(*args, **kwargs)
 
     return decorated

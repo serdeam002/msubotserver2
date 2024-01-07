@@ -253,7 +253,7 @@ def login():
 
     if user:
         # Create a JWT token with user information
-        token = create_access_token(identity={'user_id': user[0], 'username': user[1]})
+        token = create_access_token(identity=user[0])
         return jsonify({'token': token})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401

@@ -217,6 +217,7 @@ def delete_data(id):
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
+@jwt_required()
 def get_data():
     cursor, connection = get_cursor_and_connection()
 

@@ -188,7 +188,6 @@ def token_required(f):
 
 # เพิ่มข้อมูล
 @app.route('/api/adddata', methods=['POST'])
-@token_required
 def add_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -202,7 +201,6 @@ def add_data():
 
 # แก้ไขข้อมูล
 @app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
-@token_required
 def edit_data(item_id):
     try:
         # Get data from request
@@ -229,7 +227,6 @@ def edit_data(item_id):
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
-@token_required
 def delete_data(id):
     cursor, connection = get_cursor_and_connection()
 
@@ -240,7 +237,6 @@ def delete_data(id):
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
-@token_required
 def get_data():
     cursor, connection = get_cursor_and_connection()
 

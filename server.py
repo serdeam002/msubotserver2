@@ -288,7 +288,7 @@ def login():
     if user:
         # Create a JWT token with user information
         token = jwt.encode({'user_id': user[0], 'username': user[1]}, secret_key, algorithm='HS256')
-        return jsonify({'token': token.decode('utf-8')})
+        return jsonify({'token': token})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
 

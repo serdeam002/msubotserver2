@@ -160,7 +160,7 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
-app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
+app.config['JWT_SECRET_KEY'] = 'your_secret_key_here'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
@@ -253,7 +253,7 @@ def login():
 
     if user:
         # Create a JWT token with user information
-        token = create_access_token(identity=user[0])
+        token = create_access_token(identity={'user_id': user[0], 'username': user[1]})
         return jsonify({'token': token})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401

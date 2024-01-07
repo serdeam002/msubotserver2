@@ -223,6 +223,7 @@ def get_data():
 
     cursor.execute("SELECT * FROM serials")
     result = cursor.fetchall()
+    connection.commit()
 
     response = jsonify(result)
     return response

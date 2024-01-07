@@ -166,7 +166,7 @@ jwt = JWTManager(app)
 @app.route('/api/adddata', methods=['POST'])
 @jwt_required()
 def add_data():
-    print(request.headers)
+    print(request.headers.get('Authorization'))
     cursor, connection = get_cursor_and_connection()
 
     data = request.get_json()

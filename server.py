@@ -6,7 +6,6 @@ from flask import Flask, request, jsonify, g
 import jwt
 import secrets
 from functools import wraps
-from contextlib import contextmanager
 
 app = Flask(__name__)
 load_dotenv()
@@ -27,15 +26,12 @@ def create_db_connection():
     )
 
 # Function to get a cursor and connection
-@contextmanager
 def get_cursor_and_connection():
-    connection = create_db_connection()
-    cursor = connection.cursor()
-    try:
-        yield cursor, connection
-    finally:
-        cursor.close()
-        connection.close()
+    if 'db_connection' not in g:
+        g.db_connection = create_db_connection()
+    if 'db_cursor' not in g:
+        g.db_cursor = g.db_connection.cursor()
+    return g.db_cursor, g.db_connection
 
 # Close the cursor and connection when the application context is popped
 @app.teardown_appcontext
@@ -163,9 +159,36 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        cursor, connection = get_cursor_and_connection()
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 403
+
+        try:
+            data = jwt.decode(token, secret_key)
+            user = get_user_from_database(data['user_id'], cursor, connection)
+
+            if not user:
+                raise Exception('User not found')
+            request.user = user
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), 401
+        except Exception as e:
+            return jsonify({'error': str(e)}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated
 
 # เพิ่มข้อมูล
 @app.route('/api/adddata', methods=['POST'])
+@token_required
 def add_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -179,6 +202,7 @@ def add_data():
 
 # แก้ไขข้อมูล
 @app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
+@token_required
 def edit_data(item_id):
     try:
         # Get data from request
@@ -205,6 +229,7 @@ def edit_data(item_id):
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
+@token_required
 def delete_data(id):
     cursor, connection = get_cursor_and_connection()
 
@@ -215,6 +240,7 @@ def delete_data(id):
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
+@token_required
 def get_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -239,6 +265,8 @@ def get_user_from_database(user_id, cursor, connection):
     except Exception as e:
         print(f"Error getting user from database: {e}")
         return None
+
+
 
 # Route for user login
 
@@ -271,6 +299,10 @@ def login():
         return jsonify({'error': 'Invalid credentials'}), 401
 
 # Protected route requiring a valid token
+@app.route('/protected', methods=['GET'])
+@token_required
+def protected():
+    return jsonify({'message': 'Protected route', 'user': {'id': request.user[0], 'username': request.user[1]}})
 
 if __name__ == '__main__':
     app.run(debug=True)

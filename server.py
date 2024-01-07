@@ -163,6 +163,7 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
+        print(token)
         cursor, connection = get_cursor_and_connection()
 
         if not token:

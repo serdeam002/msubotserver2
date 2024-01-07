@@ -166,6 +166,7 @@ jwt = JWTManager(app)
 @app.route('/api/adddata', methods=['POST'])
 @jwt_required()
 def add_data():
+    print(request.headers)
     cursor, connection = get_cursor_and_connection()
 
     data = request.get_json()
@@ -193,7 +194,7 @@ def edit_data(item_id):
         # Update data in the database
         cursor, connection = get_cursor_and_connection()
         cursor.execute('UPDATE serials SET serial = %s, status = %s WHERE id = %s',
-                          (updated_serial, updated_status, item_id))
+                       (updated_serial, updated_status, item_id))
         connection.commit()
 
         return jsonify({'message': 'Data updated successfully'})
@@ -218,7 +219,6 @@ def delete_data(id):
 @app.route('/api/getdata', methods=['GET'])
 @jwt_required()
 def get_data():
-    print(request.headers)
     cursor, connection = get_cursor_and_connection()
 
     cursor.execute("SELECT * FROM serials")
@@ -257,7 +257,6 @@ def login():
         return jsonify({'token': token})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
-
 
 if __name__ == '__main__':
     app.run()

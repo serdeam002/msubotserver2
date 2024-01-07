@@ -256,7 +256,6 @@ def login():
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
 
-# Protected route requiring a valid token
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

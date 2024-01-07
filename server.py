@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 from flask import Flask, request, jsonify, g
 import secrets
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from datetime import timedelta
 
 app = Flask(__name__)
@@ -55,6 +55,7 @@ def verify_serial():
         query = "SELECT * FROM computer_usage WHERE serial = %s"
         cursor.execute(query, (user_serial,))
         result = cursor.fetchone()
+        db_connection.commit()
         print(result)
 
         if result:
@@ -256,6 +257,13 @@ def login():
         return jsonify({'token': token})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
+
+@app.route('/api/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    # ส่วนนี้จะถูกเรียกเมื่อ Token ถูกส่งมาพร้อมกับ request และถูกตรวจสอบว่าถูกต้อง
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
 
 if __name__ == '__main__':
     app.run()

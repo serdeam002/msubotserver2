@@ -178,8 +178,6 @@ def token_required(f):
         except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
-            data = jwt.decode(token, secret_key, algorithms=['HS256'])
-            print(f"Decoded Token Data: {data}")
             return jsonify({'error': 'Invalid token'}), 401
         except Exception as e:
             return jsonify({'error': str(e)}), 401

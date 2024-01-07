@@ -161,15 +161,16 @@ def check_computer_usage_server():
 
 secret_key = secrets.token_urlsafe(32)
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
         print(token)
-        cursor, connection = get_cursor_and_connection()
-
         if not token:
             return jsonify({'error': 'Token is missing'}), 403
+
+        cursor, connection = get_cursor_and_connection()
 
         try:
             data = jwt.decode(token, secret_key)
@@ -177,7 +178,10 @@ def token_required(f):
 
             if not user:
                 raise Exception('User not found')
+
+            # Set the user information in the request object
             request.user = user
+
         except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:

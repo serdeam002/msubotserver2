@@ -259,6 +259,7 @@ def check_user_credentials(username, password, cursor, connection):
         query = "SELECT * FROM users WHERE username = %s AND password = %s"
         cursor.execute(query, (username, password))
         user = cursor.fetchone()
+        connection.commit()  # Commit the changes to the database
         return user
     except Exception as e:
         print(f"Error checking user credentials: {e}")

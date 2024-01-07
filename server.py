@@ -163,32 +163,9 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        data = jwt.decode(token, secret_key)
-        try:
-            #T
-            print(f"Decoded Token Data: {data}")
-        except jwt.ExpiredSignatureError:
-            print("Token has expired")
-            return jsonify({'error': 'Token has expired'}), 401
-        except jwt.InvalidTokenError:
-            print("Invalid token")
-            print(f"Decoded Token Data: {data}")
-            return jsonify({'error': 'Invalid token'}), 401
-        except Exception as e:
-            print(f"Error during token verification: {str(e)}")
-            return jsonify({'error': str(e)}), 401
-
-        return f(*args, **kwargs)
-
-    return decorated
 
 # เพิ่มข้อมูล
 @app.route('/api/adddata', methods=['POST'])
-@token_required
 def add_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -202,7 +179,6 @@ def add_data():
 
 # แก้ไขข้อมูล
 @app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
-@token_required
 def edit_data(item_id):
     try:
         # Get data from request
@@ -229,7 +205,6 @@ def edit_data(item_id):
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
-@token_required
 def delete_data(id):
     cursor, connection = get_cursor_and_connection()
 
@@ -240,7 +215,6 @@ def delete_data(id):
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
-@token_required
 def get_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -265,8 +239,6 @@ def get_user_from_database(user_id, cursor, connection):
     except Exception as e:
         print(f"Error getting user from database: {e}")
         return None
-
-
 
 # Route for user login
 
@@ -299,10 +271,6 @@ def login():
         return jsonify({'error': 'Invalid credentials'}), 401
 
 # Protected route requiring a valid token
-@app.route('/protected', methods=['GET'])
-@token_required
-def protected():
-    return jsonify({'message': 'Protected route', 'user': {'id': request.user[0], 'username': request.user[1]}})
 
 if __name__ == '__main__':
     app.run(debug=True)

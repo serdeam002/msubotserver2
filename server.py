@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, g
 import jwt
 import secrets
 from functools import wraps
+from contextlib import contextmanager
 
 app = Flask(__name__)
 load_dotenv()
@@ -26,12 +27,15 @@ def create_db_connection():
     )
 
 # Function to get a cursor and connection
+@contextmanager
 def get_cursor_and_connection():
-    if 'db_connection' not in g:
-        g.db_connection = create_db_connection()
-    if 'db_cursor' not in g:
-        g.db_cursor = g.db_connection.cursor()
-    return g.db_cursor, g.db_connection
+    connection = create_db_connection()
+    cursor = connection.cursor()
+    try:
+        yield cursor, connection
+    finally:
+        cursor.close()
+        connection.close()
 
 # Close the cursor and connection when the application context is popped
 @app.teardown_appcontext

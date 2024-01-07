@@ -225,19 +225,30 @@ def get_data():
 secret_key = secrets.token_urlsafe(32)
 
 # Decorator to require a valid token for protected routes
+def get_user_from_database(user_id, cursor, connection):
+    try:
+        query = "SELECT * FROM users WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        user = cursor.fetchone()
+        connection.commit()  # Commit the changes to the database
+        return user
+    except Exception as e:
+        print(f"Error getting user from database: {e}")
+        return None
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
+        cursor, connection = get_cursor_and_connection()
 
         if not token:
             return jsonify({'error': 'Token is missing'}), 403
 
         try:
             data = jwt.decode(token, secret_key)
-            # Replace the following line with your logic to get user information from the database
-            # Example: user = get_user_from_database(data['user_id'])
-            user = None
+            user = get_user_from_database(data['user_id'], cursor, connection)
+
             if not user:
                 raise Exception('User not found')
             request.user = user

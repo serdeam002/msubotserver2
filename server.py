@@ -3,11 +3,13 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from flask import Flask, request, jsonify, g
+import jwt
+import secrets
+from functools import wraps
 
 app = Flask(__name__)
 load_dotenv()
-#CORS(app)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app)
 
 host = os.environ.get('JAWSDB_HOST')
 user = os.environ.get('JAWSDB_USER')
@@ -162,11 +164,9 @@ def check_computer_usage_server():
 def add_data():
     cursor, connection = get_cursor_and_connection()
 
-    # รับข้อมูลที่จะเพิ่มจากข้อมูลที่ส่งมา
     data = request.get_json()
     serial = data['serial']
 
-    # ส่งคำขอ SQL เพื่อเพิ่มข้อมูลในฐานข้อมูล
     cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
     connection.commit()
 
@@ -203,7 +203,6 @@ def edit_data(item_id):
 def delete_data(id):
     cursor, connection = get_cursor_and_connection()
 
-    # ส่งคำขอ SQL เพื่อลบข้อมูลจากฐานข้อมูล
     cursor.execute("DELETE FROM serials WHERE id = %s", (id,))
     connection.commit()
 
@@ -214,13 +213,78 @@ def delete_data(id):
 def get_data():
     cursor, connection = get_cursor_and_connection()
 
-    # ส่งคำขอ SQL เพื่อดึงข้อมูลจากฐานข้อมูล
     cursor.execute("SELECT * FROM serials")
     result = cursor.fetchall()
 
-    # แปลงผลลัพธ์เป็นรูปแบบ JSON และส่งกลับไปยังผู้ใช้
     response = jsonify(result)
     return response
+
+#################login######################
+
+secret_key = secrets.token_urlsafe(32)
+
+# Decorator to require a valid token for protected routes
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 403
+
+        try:
+            data = jwt.decode(token, secret_key)
+            # Replace the following line with your logic to get user information from the database
+            # Example: user = get_user_from_database(data['user_id'])
+            user = None
+            if not user:
+                raise Exception('User not found')
+            request.user = user
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), 401
+        except Exception as e:
+            return jsonify({'error': str(e)}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated
+
+# Route for user login
+
+def check_user_credentials(username, password, cursor, connection):
+    try:
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        cursor.execute(query, (username, password))
+        user = cursor.fetchone()
+        return user
+    except Exception as e:
+        print(f"Error checking user credentials: {e}")
+        return None
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
+
+    cursor, connection = get_cursor_and_connection()
+
+    user = check_user_credentials(username, password, cursor, connection)
+
+    if user:
+        # Create a JWT token with user information
+        token = jwt.encode({'user_id': user[0], 'username': user[1]}, secret_key, algorithm='HS256')
+        return jsonify({'token': token.decode('utf-8')})
+    else:
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+# Protected route requiring a valid token
+@app.route('/protected', methods=['GET'])
+@token_required
+def protected():
+    return jsonify({'message': 'Protected route', 'user': {'id': request.user[0], 'username': request.user[1]}})
 
 if __name__ == '__main__':
     app.run(debug=True)

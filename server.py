@@ -160,7 +160,7 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
-app.config['JWT_SECRET_KEY'] = 'your_secret_key_here'
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 

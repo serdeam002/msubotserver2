@@ -159,6 +159,8 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
+secret_key = secrets.token_urlsafe(32)
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -252,8 +254,6 @@ def get_data():
     return response
 
 #################login######################
-
-secret_key = secrets.token_urlsafe(32)
 
 # Decorator to require a valid token for protected routes
 def get_user_from_database(user_id, cursor, connection):

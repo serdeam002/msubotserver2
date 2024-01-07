@@ -159,49 +159,31 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
-secret_key = secrets.token_urlsafe(32)
-
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
-        print(f"Received Token: {token}")
+        cursor, connection = get_cursor_and_connection()
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 403
 
         try:
-            data = jwt.decode(token, secret_key, algorithms=['HS256'])
-            print(f"Decoded Token Data: {data}")
+            data = jwt.decode(token, secret_key)
+            user = get_user_from_database(data['user_id'], cursor, connection)
 
-            # Check if 'user_id' is present in the decoded data
-            if 'user_id' in data:
-                user_id = data['user_id']
-                cursor, connection = get_cursor_and_connection()
-
-                # Use 'get_user_from_database' to retrieve user information
-                user = get_user_from_database(user_id, cursor, connection)
-
-                # Check if the user exists
-                if user:
-                    # Set the user information in the request object
-                    request.user = user
-                else:
-                    raise Exception('User not found')
-            else:
-                raise Exception('User ID not present in token')
-
+            if not user:
+                raise Exception('User not found')
+            request.user = user
         except jwt.ExpiredSignatureError:
-            print("Token has expired")
             return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
             data = jwt.decode(token, secret_key, algorithms=['HS256'])
             print(f"Decoded Token Data: {data}")
-            print("Invalid token")
             return jsonify({'error': 'Invalid token'}), 401
         except Exception as e:
-            print(f"Error during token verification: {str(e)}")
             return jsonify({'error': str(e)}), 401
 
-        # Corrected return statement to call the original function 'f'
         return f(*args, **kwargs)
 
     return decorated
@@ -271,6 +253,8 @@ def get_data():
     return response
 
 #################login######################
+
+secret_key = secrets.token_urlsafe(32)
 
 # Decorator to require a valid token for protected routes
 def get_user_from_database(user_id, cursor, connection):

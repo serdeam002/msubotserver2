@@ -167,10 +167,10 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
         print(f"Received Token: {token}")
-
+        data = jwt.decode(token, secret_key, algorithms=['HS256'])
+        print(f"Decoded Token Data: {data}")
         try:
-            data = jwt.decode(token, secret_key, algorithms=['HS256'])
-            print(f"Decoded Token Data: {data}")
+
 
             # Check if 'user_id' is present in the decoded data
             if 'user_id' in data:

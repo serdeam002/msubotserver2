@@ -172,7 +172,22 @@ def token_required(f):
             data = jwt.decode(token, secret_key, algorithms=['HS256'])
             print(f"Decoded Token Data: {data}")
 
-            # Rest of the code for verification
+            # Check if 'user_id' is present in the decoded data
+            if 'user_id' in data:
+                user_id = data['user_id']
+                cursor, connection = get_cursor_and_connection()
+
+                # Use 'get_user_from_database' to retrieve user information
+                user = get_user_from_database(user_id, cursor, connection)
+
+                # Check if the user exists
+                if user:
+                    # Set the user information in the request object
+                    request.user = user
+                else:
+                    raise Exception('User not found')
+            else:
+                raise Exception('User ID not present in token')
 
         except jwt.ExpiredSignatureError:
             print("Token has expired")

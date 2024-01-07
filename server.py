@@ -5,7 +5,7 @@ import os
 from flask import Flask, request, jsonify, g
 import jwt
 import secrets
-from functools import wraps
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 
 app = Flask(__name__)
 load_dotenv()
@@ -159,35 +159,12 @@ def check_computer_usage_server():
 
 ###################showdatainwebsite######################
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        cursor, connection = get_cursor_and_connection()
-
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 403
-
-        try:
-            data = jwt.decode(token, secret_key)
-            user = get_user_from_database(data['user_id'], cursor, connection)
-
-            if not user:
-                raise Exception('User not found')
-            request.user = user
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token has expired'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'error': 'Invalid token'}), 401
-        except Exception as e:
-            return jsonify({'error': str(e)}), 401
-
-        return f(*args, **kwargs)
-
-    return decorated
+app.config['JWT_SECRET_KEY'] = secrets.token_urlsafe(32)
+jwt = JWTManager(app)
 
 # เพิ่มข้อมูล
 @app.route('/api/adddata', methods=['POST'])
+@jwt_required()
 def add_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -201,6 +178,7 @@ def add_data():
 
 # แก้ไขข้อมูล
 @app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
+@jwt_required()
 def edit_data(item_id):
     try:
         # Get data from request
@@ -227,6 +205,7 @@ def edit_data(item_id):
 
 # ลบข้อมูล
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_data(id):
     cursor, connection = get_cursor_and_connection()
 
@@ -237,6 +216,7 @@ def delete_data(id):
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])
+@jwt_required()
 def get_data():
     cursor, connection = get_cursor_and_connection()
 
@@ -246,26 +226,7 @@ def get_data():
     response = jsonify(result)
     return response
 
-#################login######################
-
-secret_key = secrets.token_urlsafe(32)
-
-# Decorator to require a valid token for protected routes
-def get_user_from_database(user_id, cursor, connection):
-    try:
-        query = "SELECT * FROM users WHERE id = %s"
-        cursor.execute(query, (user_id,))
-        user = cursor.fetchone()
-        connection.commit()  # Commit the changes to the database
-        return user
-    except Exception as e:
-        print(f"Error getting user from database: {e}")
-        return None
-
-
-
-# Route for user login
-
+# login
 def check_user_credentials(username, password, cursor, connection):
     try:
         query = "SELECT * FROM users WHERE username = %s AND password = %s"
@@ -276,6 +237,7 @@ def check_user_credentials(username, password, cursor, connection):
     except Exception as e:
         print(f"Error checking user credentials: {e}")
         return None
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -289,16 +251,12 @@ def login():
 
     if user:
         # Create a JWT token with user information
-        token = jwt.encode({'user_id': user[0], 'username': user[1]}, secret_key, algorithm='HS256')
+        token = jwt.encode({'user_id': user[0], 'username': user[1]}, app.config['JWT_SECRET_KEY'], algorithm='HS256')
         return jsonify({'token': token})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
 
 # Protected route requiring a valid token
-@app.route('/protected', methods=['GET'])
-@token_required
-def protected():
-    return jsonify({'message': 'Protected route', 'user': {'id': request.user[0], 'username': request.user[1]}})
 
 if __name__ == '__main__':
     app.run(debug=True)

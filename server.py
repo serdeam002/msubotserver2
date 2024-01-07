@@ -227,7 +227,6 @@ def get_data():
 
     response = jsonify(result)
     return response
-
 # login
 def check_user_credentials(username, password, cursor, connection):
     try:

@@ -157,83 +157,7 @@ def check_computer_usage_server():
         print(f"Error in '/api/computer_usage' route: {str(e)}")
         return jsonify({"error": "Internal server error."})
 
-#showdatainwebsite
-
-# เพิ่มข้อมูล
-@app.route('/api/adddata', methods=['POST'])
-def add_data():
-    cursor, connection = get_cursor_and_connection()
-
-    data = request.get_json()
-    serial = data['serial']
-
-    cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
-    connection.commit()
-
-    return jsonify({"message": "Data added successfully"})
-
-# แก้ไขข้อมูล
-@app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
-def edit_data(item_id):
-    try:
-        # Get data from request
-        data = request.get_json()
-        updated_serial = data.get('serial')
-        updated_status = data.get('status')
-
-        # Check if both serial and status are provided
-        if updated_serial is None or updated_status is None:
-            return jsonify({'error': 'Both serial and status are required'}), 400
-
-        # Update data in the database
-        cursor, connection = get_cursor_and_connection()
-        cursor.execute('UPDATE serials SET serial = %s, status = %s WHERE id = %s',
-                          (updated_serial, updated_status, item_id))
-        connection.commit()
-
-        return jsonify({'message': 'Data updated successfully'})
-
-    except Exception as e:
-        # Print the exception to the console for debugging
-        print(f"Error: {str(e)}")
-        return jsonify({'error': f'Error: {str(e)}'}), 500
-
-# ลบข้อมูล
-@app.route('/api/deletedata/<int:id>', methods=['DELETE'])
-def delete_data(id):
-    cursor, connection = get_cursor_and_connection()
-
-    cursor.execute("DELETE FROM serials WHERE id = %s", (id,))
-    connection.commit()
-
-    return jsonify({"message": "Data deleted successfully"})
-
-# ดึงข้อมูลทั้งหมด
-@app.route('/api/getdata', methods=['GET'])
-def get_data():
-    cursor, connection = get_cursor_and_connection()
-
-    cursor.execute("SELECT * FROM serials")
-    result = cursor.fetchall()
-
-    response = jsonify(result)
-    return response
-
-#################login######################
-
-secret_key = secrets.token_urlsafe(32)
-
-# Decorator to require a valid token for protected routes
-def get_user_from_database(user_id, cursor, connection):
-    try:
-        query = "SELECT * FROM users WHERE id = %s"
-        cursor.execute(query, (user_id,))
-        user = cursor.fetchone()
-        connection.commit()  # Commit the changes to the database
-        return user
-    except Exception as e:
-        print(f"Error getting user from database: {e}")
-        return None
+###################showdatainwebsite######################
 
 def token_required(f):
     @wraps(f)
@@ -261,6 +185,88 @@ def token_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
+# เพิ่มข้อมูล
+@app.route('/api/adddata', methods=['POST'])
+@token_required
+def add_data():
+    cursor, connection = get_cursor_and_connection()
+
+    data = request.get_json()
+    serial = data['serial']
+
+    cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
+    connection.commit()
+
+    return jsonify({"message": "Data added successfully"})
+
+# แก้ไขข้อมูล
+@app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
+@token_required
+def edit_data(item_id):
+    try:
+        # Get data from request
+        data = request.get_json()
+        updated_serial = data.get('serial')
+        updated_status = data.get('status')
+
+        # Check if both serial and status are provided
+        if updated_serial is None or updated_status is None:
+            return jsonify({'error': 'Both serial and status are required'}), 400
+
+        # Update data in the database
+        cursor, connection = get_cursor_and_connection()
+        cursor.execute('UPDATE serials SET serial = %s, status = %s WHERE id = %s',
+                          (updated_serial, updated_status, item_id))
+        connection.commit()
+
+        return jsonify({'message': 'Data updated successfully'})
+
+    except Exception as e:
+        # Print the exception to the console for debugging
+        print(f"Error: {str(e)}")
+        return jsonify({'error': f'Error: {str(e)}'}), 500
+
+# ลบข้อมูล
+@app.route('/api/deletedata/<int:id>', methods=['DELETE'])
+@token_required
+def delete_data(id):
+    cursor, connection = get_cursor_and_connection()
+
+    cursor.execute("DELETE FROM serials WHERE id = %s", (id,))
+    connection.commit()
+
+    return jsonify({"message": "Data deleted successfully"})
+
+# ดึงข้อมูลทั้งหมด
+@app.route('/api/getdata', methods=['GET'])
+@token_required
+def get_data():
+    cursor, connection = get_cursor_and_connection()
+
+    cursor.execute("SELECT * FROM serials")
+    result = cursor.fetchall()
+
+    response = jsonify(result)
+    return response
+
+#################login######################
+
+secret_key = secrets.token_urlsafe(32)
+
+# Decorator to require a valid token for protected routes
+def get_user_from_database(user_id, cursor, connection):
+    try:
+        query = "SELECT * FROM users WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        user = cursor.fetchone()
+        connection.commit()  # Commit the changes to the database
+        return user
+    except Exception as e:
+        print(f"Error getting user from database: {e}")
+        return None
+
+
 
 # Route for user login
 

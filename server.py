@@ -168,15 +168,18 @@ jwt = JWTManager(app)
 @app.route('/api/adddata', methods=['POST'])
 @jwt_required()
 def add_data():
-    cursor, connection = get_cursor_and_connection()
+    try:
+        cursor, connection = get_cursor_and_connection()
 
-    data = request.get_json()
-    serial = data['serial']
+        data = request.get_json()
+        serial = data['serial']
 
-    cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
-    connection.commit()
-
-    return jsonify({"message": "Data added successfully"})
+        cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
+        connection.commit()
+        return jsonify({'message': 'Get Data successfully'}), 200
+    except Exception as e:
+        # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
+        return jsonify({"error": str(e)}), 422
 
 # แก้ไขข้อมูล
 @app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
@@ -209,12 +212,15 @@ def edit_data(item_id):
 @app.route('/api/deletedata/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_data(id):
-    cursor, connection = get_cursor_and_connection()
+    try:
+        cursor, connection = get_cursor_and_connection()
 
-    cursor.execute("DELETE FROM serials WHERE id = %s", (id,))
-    connection.commit()
+        cursor.execute("DELETE FROM serials WHERE id = %s", (id,))
+        connection.commit()
 
-    return jsonify({"message": "Data deleted successfully"})
+        return jsonify({"message": "Data deleted successfully"})
+    except Exception as e:
+        return jsonify({'error': f'Error: {str(e)}'}), 500
 
 # ดึงข้อมูลทั้งหมด
 @app.route('/api/getdata', methods=['GET'])

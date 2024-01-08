@@ -227,14 +227,14 @@ def delete_data(id):
 @jwt_required()
 def get_data():
     try:
-        """cursor, connection = get_cursor_and_connection()
+        cursor, connection = get_cursor_and_connection()
 
         cursor.execute("SELECT * FROM serials")
         result = cursor.fetchall()
         connection.commit()
 
-        response = jsonify(result)"""
-        return jsonify({'message': 'Get Data successfully'})
+        response = jsonify(result)
+        return response, 200, {'message': 'Get Data successfully'}
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422

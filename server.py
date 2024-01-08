@@ -176,7 +176,7 @@ def add_data():
 
         cursor.execute("INSERT INTO serials (serial) VALUES (%s)", (serial,))
         connection.commit()
-        return jsonify({'message': 'Get Data successfully'}), 200
+        return jsonify({'message': 'Add Data successfully'}), 200
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422
@@ -226,14 +226,18 @@ def delete_data(id):
 @app.route('/api/getdata', methods=['GET'])
 @jwt_required()
 def get_data():
-    cursor, connection = get_cursor_and_connection()
+    try:
+        cursor, connection = get_cursor_and_connection()
 
-    cursor.execute("SELECT * FROM serials")
-    result = cursor.fetchall()
-    connection.commit()
+        cursor.execute("SELECT * FROM serials")
+        result = cursor.fetchall()
+        connection.commit()
 
-    response = jsonify(result)
-    return response
+        response = jsonify(result)
+        return response, jsonify({'message': 'Get Data successfully'}), 200
+    except Exception as e:
+        # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
+        return jsonify({"error": str(e)}), 422
 # login
 def check_user_credentials(username, password, cursor, connection):
     try:

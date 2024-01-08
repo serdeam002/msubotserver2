@@ -234,7 +234,7 @@ def get_data():
         connection.commit()
 
         response = jsonify(result)
-        return response, 200,
+        return response, 200, {'message': 'Get Data successfully'}
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422

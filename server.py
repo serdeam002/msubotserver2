@@ -234,7 +234,7 @@ def get_data():
         connection.commit()
 
         response = jsonify(result)
-        return response, 200, jsonify({"message": "Get deleted successfully"})
+        return response, 200
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422

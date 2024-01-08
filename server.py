@@ -233,8 +233,8 @@ def get_data():
         result = cursor.fetchall()
         connection.commit()
 
-        response = jsonify(result, {'message': 'Get Data successfully'})
-        return response
+        response = jsonify(result)
+        return jsonify({'message': 'Get Data successfully'}), response, 200
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422

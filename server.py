@@ -223,18 +223,32 @@ def delete_data(id):
         return jsonify({'error': f'Error: {str(e)}'}), 500
 
 # ดึงข้อมูลทั้งหมด
-@app.route('/api/getserial', methods=['GET'])
+@app.route('/api/getdata', methods=['GET'])
 @jwt_required()
 def get_data():
+
+    dataused = request.headers.get('dataused')
+    dataserial = request.headers.get('dataserial')
+
     try:
-        cursor, connection = get_cursor_and_connection()
+        if(dataserial):
+            cursor, connection = get_cursor_and_connection()
 
-        cursor.execute("SELECT * FROM serials")
-        result = cursor.fetchall()
-        connection.commit()
+            cursor.execute("SELECT * FROM serials")
+            result = cursor.fetchall()
+            connection.commit()
 
-        response = jsonify(result)
-        return response, 200
+            response = jsonify(result)
+            return response, 200
+        elif(dataused):
+            cursor, connection = get_cursor_and_connection()
+
+            cursor.execute("SELECT * FROM computer_usage")
+            result = cursor.fetchall()
+            connection.commit()
+
+            response = jsonify(result)
+            return response, 200
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422

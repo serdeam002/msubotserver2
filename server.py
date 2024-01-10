@@ -158,14 +158,14 @@ def check_computer_usage_server():
         print(f"Error in '/api/computer_usage' route: {str(e)}")
         return jsonify({"error": "Internal server error."})
 
-###################showdatainwebsite######################
+################### serial PAGE ######################
 
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 # เพิ่มข้อมูล
-@app.route('/api/adddata', methods=['POST'])
+@app.route('/api/addserial', methods=['POST'])
 @jwt_required()
 def add_data():
     try:
@@ -182,7 +182,7 @@ def add_data():
         return jsonify({"error": str(e)}), 422
 
 # แก้ไขข้อมูล
-@app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
+@app.route('/api/updateserial/<int:item_id>', methods=['PUT'])
 @jwt_required()
 def edit_data(item_id):
     try:
@@ -209,7 +209,7 @@ def edit_data(item_id):
         return jsonify({'error': f'Error: {str(e)}'}), 500
 
 # ลบข้อมูล
-@app.route('/api/deletedata/<int:id>', methods=['DELETE'])
+@app.route('/api/deleteserial/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_data(id):
     try:
@@ -223,7 +223,7 @@ def delete_data(id):
         return jsonify({'error': f'Error: {str(e)}'}), 500
 
 # ดึงข้อมูลทั้งหมด
-@app.route('/api/getdata', methods=['GET'])
+@app.route('/api/getserial', methods=['GET'])
 @jwt_required()
 def get_data():
     try:
@@ -238,6 +238,26 @@ def get_data():
     except Exception as e:
         # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
         return jsonify({"error": str(e)}), 422
+
+############################# computer_usage PAGE ########################################
+@app.route('/api/getused', methods=['GET'])
+@jwt_required()
+def get_used():
+    try:
+        cursor, connection = get_cursor_and_connection()
+
+        cursor.execute("SELECT * FROM computer_usage")
+        result = cursor.fetchall()
+        connection.commit()
+
+        response = jsonify(result)
+        return response, 200
+    except Exception as e:
+        # กรณีเกิดข้อผิดพลาดในการดึงข้อมูลหรือประมวลผล
+        return jsonify({"error": str(e)}), 422
+
+
+    #####################################################################
 # login
 def check_user_credentials(username, password, cursor, connection):
     try:

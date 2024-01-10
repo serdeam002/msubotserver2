@@ -165,7 +165,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 # เพิ่มข้อมูล
-@app.route('/api/addserial', methods=['POST'])
+@app.route('/api/adddata', methods=['POST'])
 @jwt_required()
 def add_data():
     try:
@@ -182,7 +182,7 @@ def add_data():
         return jsonify({"error": str(e)}), 422
 
 # แก้ไขข้อมูล
-@app.route('/api/updateserial/<int:item_id>', methods=['PUT'])
+@app.route('/api/updatedata/<int:item_id>', methods=['PUT'])
 @jwt_required()
 def edit_data(item_id):
     try:
@@ -209,7 +209,7 @@ def edit_data(item_id):
         return jsonify({'error': f'Error: {str(e)}'}), 500
 
 # ลบข้อมูล
-@app.route('/api/deleteserial/<int:id>', methods=['DELETE'])
+@app.route('/api/deletedata/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_data(id):
     try:

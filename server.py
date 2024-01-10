@@ -227,11 +227,10 @@ def delete_data(id):
 @jwt_required()
 def get_data():
 
-    dataused = request.headers.get('dataused')
-    dataserial = request.headers.get('dataserial')
+    dataselect = request.headers.get('dataselect')
 
     try:
-        if(dataserial):
+        if(dataselect == 'dataserials'):
             cursor, connection = get_cursor_and_connection()
 
             cursor.execute("SELECT * FROM serials")
@@ -240,7 +239,7 @@ def get_data():
 
             response = jsonify(result)
             return response, 200
-        elif(dataused):
+        elif(dataselect == 'dataused'):
             cursor, connection = get_cursor_and_connection()
 
             cursor.execute("SELECT * FROM computer_usage")

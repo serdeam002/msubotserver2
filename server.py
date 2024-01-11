@@ -196,13 +196,25 @@ def edit_data(item_id):
         if updated_serial is None or updated_status is None:
             return jsonify({'error': 'Both serial and status are required'}), 400
 
-        # Update data in the database
+        # Get the existing serial data
         cursor, connection = get_cursor_and_connection()
-        cursor.execute('UPDATE serials SET serial = %s, status = %s WHERE id = %s',
-                       (updated_serial, updated_status, item_id))
-        connection.commit()
+        cursor.execute('SELECT * FROM serials WHERE id = %s', (item_id,))
+        existing_data = cursor.fetchone()
 
-        return jsonify({'message': 'Data updated successfully'})
+        if existing_data:
+            # Check if serial or status has been changed
+            if existing_data[1] != updated_serial or existing_data[2] != updated_status:
+                # Delete data from computer_usage table for the given ID
+                cursor.execute('DELETE FROM computer_usage WHERE id = %s', (item_id,))
+
+            # Update data in the serials table
+            cursor.execute('UPDATE serials SET serial = %s, status = %s WHERE id = %s',
+                           (updated_serial, updated_status, item_id))
+            connection.commit()
+
+            return jsonify({'message': 'Data updated successfully'})
+        else:
+            return jsonify({'error': 'Item not found'}), 404
 
     except Exception as e:
         # Print the exception to the console for debugging

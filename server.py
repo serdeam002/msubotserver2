@@ -85,9 +85,10 @@ def insert_serial(user_serial):
         print(result)
 
         if result:
+            serial_id = result['id']
             # Serial exists, store data in computer_usage table
-            insert_query = "INSERT INTO computer_usage (mac_address, serial) VALUES (%s, %s)"
-            cursor.execute(insert_query, (client_mac_address, user_serial))
+            insert_query = "INSERT INTO computer_usage (id, mac_address, serial) VALUES (%s, %s, %s)"
+            cursor.execute(insert_query, (serial_id, client_mac_address, user_serial))
             db_connection.commit()
 
             # Update the status column in the serials table

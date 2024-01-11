@@ -84,7 +84,7 @@ def insert_serial(user_serial):
         result = cursor.fetchone()
         print(result)
 
-        if result:
+        if result and result[2] != 1:
             serial_id = result[0]
             # Serial exists, store data in computer_usage table
             insert_query = "INSERT INTO computer_usage (id, mac_address, serial) VALUES (%s, %s, %s)"
@@ -99,6 +99,8 @@ def insert_serial(user_serial):
             # Display success message
             return jsonify({"message": "Serial successfully used. Program is opening.\nซีเรียลสำเร็จแล้วโปรแกรมกำลังเปิด"})
         else:
+            if result[2] == 1:
+                return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
             # Display error message for incorrect serial
             return jsonify({"error": "The serial is invalid!.\nซีเรียลไม่ถูกต้อง"})
     except Exception as e:

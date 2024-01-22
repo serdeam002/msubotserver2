@@ -102,7 +102,8 @@ def insert_serial(user_serial):
             if result[2] == 1:
                 return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
             # Display error message for incorrect serial
-            return jsonify({"error": "The serial is invalid!.\nซีเรียลไม่ถูกต้อง"})
+            else:
+                return jsonify({"error": "The serial is invalid!.\nซีเรียลไม่ถูกต้อง"})
     except Exception as e:
         return jsonify({"error": str(e)})
 

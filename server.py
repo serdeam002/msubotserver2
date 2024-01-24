@@ -62,16 +62,11 @@ def verify_serial():
         if result and result[2] == user_serial:
             # Serials match, open the program
             return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
-        else:
             # Serials don't match, proceed to insert the serial
-            return insert_serial(user_serial)
+        return insert_serial(user_serial)
 
     except Exception as e:
         return jsonify({"error": str(e)})
-
-    finally:
-        if db_connection:
-            db_connection.close()
 
 @app.route('/api/insert_serial', methods=['POST'])
 def insert_serial(user_serial):

@@ -58,17 +58,14 @@ def verify_serial():
         db_connection.commit()
         print(result)
 
-        if result:
-            # Check if the serial in computer_usage matches the one entered by the user
-            if result[2] == user_serial:
-                # Serials match, open the program
-                return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
-            else:
-                # Serials don't match, proceed to insert the serial
-                return insert_serial(user_serial)
+        # Check if the serial in computer_usage matches the one entered by the user
+        if result and result[2] == user_serial:
+            # Serials match, open the program
+            return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
         else:
-            # Serial not found, proceed to insert the serial
+            # Serials don't match, proceed to insert the serial
             return insert_serial(user_serial)
+
     except Exception as e:
         return jsonify({"error": str(e)})
 

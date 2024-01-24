@@ -69,6 +69,10 @@ def verify_serial():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+    finally:
+        if db_connection:
+            db_connection.close()
+
 @app.route('/api/insert_serial', methods=['POST'])
 def insert_serial(user_serial):
     try:

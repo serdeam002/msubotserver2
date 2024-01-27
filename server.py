@@ -62,6 +62,8 @@ def verify_serial():
         if result and result[2] == user_serial:
             # Serials match, open the program
             return jsonify({"error": "Serial is already in use.\nซีเรียลถูกใช้งานแล้ว"})
+        elif result is None:
+            return insert_serial(user_serial)
         else:
             # Serials don't match, proceed to insert the serial
             return insert_serial(user_serial)

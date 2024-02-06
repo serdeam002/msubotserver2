@@ -9,7 +9,7 @@ from datetime import timedelta
 
 app = Flask(__name__)
 load_dotenv()
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://msubot-1cde4.web.app"}})
 
 host = os.environ.get('JAWSDB_HOST')
 user = os.environ.get('JAWSDB_USER')

@@ -11,6 +11,7 @@ app = Flask(__name__)
 load_dotenv()
 CORS(app, resources={r"/api/*": {"origins": "https://msubot-1cde4.web.app"}})
 CORS(app, resources={r"/login": {"origins": "https://msubot-1cde4.web.app"}})
+CORS(app, resources={r"/login": {"origins": "http://localhost:3001"}})
 
 host = os.environ.get('JAWSDB_HOST')
 user = os.environ.get('JAWSDB_USER')
